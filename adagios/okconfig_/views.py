@@ -22,7 +22,7 @@ from django.core import serializers
 from django.http import HttpResponse, HttpResponseServerError, HttpResponseRedirect
 from django.core.context_processors import csrf
 from django.template import RequestContext
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from adagios.views import adagios_decorator
 
 from django.core.urlresolvers import reverse

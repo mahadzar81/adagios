@@ -17,17 +17,16 @@
 
 # Django settings for adagios project.
 
-from past.builtins import execfile
+import os
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 USE_TZ = True
 
 # Hack to allow relative template paths
-import os
 from glob import glob
 from warnings import warn
 import string
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 djangopath = os.path.dirname(__file__)
 
 ADMINS = (
@@ -83,67 +82,28 @@ STATIC_ROOT = '%s/media/' % djangopath
 #ADMIN_MEDIA_PREFIX = '/media/'
 
 # List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
-
-MIDDLEWARE_CLASSES = (
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'adagios.auth.AuthorizationMiddleWare',
-    #'django.contrib.auth.middleware.AuthenticationMiddleware',
-    #'django.contrib.messages.middleware.MessageMiddleware',
-)
-
-SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
-
-LANGUAGES = (
-    ('en', 'English'),
-    ('fr', 'French'),
-)
-
-LOCALE_PATHS = (
-    "%s/locale/" % (djangopath),
-)
-
-ROOT_URLCONF = 'adagios.urls'
-
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    "%s/templates" % (djangopath),
-)
-
-INSTALLED_APPS = [
-    #'django.contrib.auth',
-    #'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    #'django.contrib.messages',
-    # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
-    #'django.contrib.staticfiles',
-    'adagios.objectbrowser',
-    'adagios.rest',
-    'adagios.misc',
-    'adagios.pnp',
-    'adagios.contrib',
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            "%s/templates" % (djangopath),
+        ],
+        'OPTIONS': {
+            'context_processors': [
+                'adagios.context_processors.on_page_load',
+                "django.template.context_processors.debug",
+                "django.template.context_processors.i18n",
+                "django.template.context_processors.static",
+                "django.template.context_processors.request",
+                "django.contrib.messages.context_processors.messages",
+            ],
+            'loaders': [
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ],
+        },
+    },
 ]
-
-TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.on_page_load',
-    #"django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    #"django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.core.context_processors.request",
-    "django.contrib.messages.context_processors.messages")
 
 
 # Themes options #
@@ -205,6 +165,49 @@ UNHANDLED_HOSTS = {
 # '.example.com' will match example.com, www.example.com
 # A value of '*' will match anything
 ALLOWED_HOSTS = ['*']
+
+MIDDLEWARE = [
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'adagios.auth.AuthorizationMiddleWare',
+    #'django.contrib.auth.middleware.AuthenticationMiddleware',
+    #'django.contrib.messages.middleware.MessageMiddleware',
+]
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
+LANGUAGES = (
+    ('en', 'English'),
+    ('fr', 'French'),
+)
+
+LOCALE_PATHS = (
+    "%s/locale/" % (djangopath),
+)
+
+ROOT_URLCONF = 'adagios.urls'
+
+INSTALLED_APPS = [
+    'django.contrib.contenttypes',
+    'django.contrib.auth',
+    #'django.contrib.auth',
+    #'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    #'django.contrib.messages',
+    # Uncomment the next line to enable the admin:
+    # 'django.contrib.admin',
+    # Uncomment the next line to enable admin documentation:
+    # 'django.contrib.admindocs',
+    #'django.contrib.staticfiles',
+    'adagios.objectbrowser',
+    'adagios.rest',
+    'adagios.misc',
+    'adagios.pnp',
+    'adagios.contrib',
+]
 
 # Graphite #
 
@@ -298,25 +301,19 @@ def reload_configfile(adagios_configfile=None):
             adagios_configfile = alternative_adagios_configfile
             open(adagios_configfile, "a").close()
 
-        execfile(adagios_configfile, globals())
+        with open(adagios_configfile) as f:
+            exec(f.read(), globals())
         # if config has any default include, lets include that as well
         configfiles = glob(include)
         for configfile in configfiles:
-            execfile(configfile, globals())
+            with open(configfile) as f:
+                exec(f.read(), globals())
     except IOError as e:
         warn('Unable to open %s: %s' % (adagios_configfile, e.strerror))
 
 reload_configfile()
 
-try:
-    from django.utils.crypto import get_random_string
-except ImportError:
-    def get_random_string(length, stringset=string.ascii_letters + string.digits + string.punctuation):
-        '''
-        Returns a string with `length` characters chosen from `stringset`
-        >>> len(get_random_string(20)) == 20
-        '''
-        return ''.join([stringset[i % len(stringset)] for i in [ord(x) for x in os.urandom(length)]])
+from django.utils.crypto import get_random_string
 
 if not django_secret_key:
     chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
@@ -331,7 +328,9 @@ if not django_secret_key:
 else:
     SECRET_KEY = django_secret_key
 
-ALLOWED_INCLUDE_ROOTS = (serverside_includes,)
+# ALLOWED_INCLUDE_ROOTS is deprecated in Django 5.x, use TEMPLATES['OPTIONS']['allowed_include_roots'] instead
+# For backwards compatibility, we keep this but it's not used in modern Django
+# ALLOWED_INCLUDE_ROOTS = (serverside_includes,)
 
 if enable_status_view:
     #plugins['status'] = 'adagios.status'

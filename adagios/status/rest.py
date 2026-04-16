@@ -36,7 +36,7 @@ import adagios.status.utils
 import pynag.Parsers
 import collections
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from adagios import userdata
 
 def hosts(request, fields=None, **kwargs):
@@ -293,7 +293,7 @@ def reschedule(request, host_name=None, service_description=None, check_time=Non
       check_time -- timestamp of when to execute this check, if left empty, execute right now
       wait -- If set to 1, function will not return until check has been rescheduled
     """
-    if check_time is None or check_time is '':
+    if check_time is None or check_time == '':
         check_time = time.time()
 
     check_time = int(check_time)

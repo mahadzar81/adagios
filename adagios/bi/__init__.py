@@ -30,7 +30,7 @@ import adagios.pnp.functions
 import adagios.settings
 import time
 import adagios.status.utils
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 import socket
 
 

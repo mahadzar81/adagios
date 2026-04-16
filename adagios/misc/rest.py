@@ -27,7 +27,7 @@ from builtins import str
 from adagios import __version__, notifications, tasks
 from adagios.settings import plugins
 from adagios import userdata
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 version = __version__
 

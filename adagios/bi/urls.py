@@ -15,19 +15,18 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url, patterns
+from django.urls import path, re_path
 
-urlpatterns = patterns('adagios',
-                      url(r'^/?$', 'bi.views.index'),
-                      url(r'^/add/?$', 'bi.views.add'),
-                      url(r'^/add/subprocess/?$', 'bi.views.add_subprocess'),
-                      url(r'^/add/graph/?$', 'bi.views.add_graph'),
-                      url(r'^/(?P<process_name>.+)/edit/status_method$', 'bi.views.change_status_calculation_method'),
-                      url(r'^/edit/(?P<process_type>.+?)/(?P<process_name>.+?)/?$', 'bi.views.edit'),
-                      url(r'^/json/(?P<process_type>.+?)/(?P<process_name>.+?)/?$', 'bi.views.json'),
-                      url(r'^/graphs/(?P<process_type>.+?)/(?P<process_name>.+?)/?$', 'bi.views.graphs_json'),
-                      url(r'^/delete/(?P<process_type>.+?)/(?P<process_name>.+?)/?$', 'bi.views.delete'),
-                      url(r'^/view/(?P<process_type>.+?)/(?P<process_name>.+?)/?$', 'bi.views.view'),
-                      #(r'^/view/(?P<process_name>.+)/?$', 'bi.views.view'),
-                       )
-
+urlpatterns = [
+    path('', 'bi.views.index'),
+    path('add/', 'bi.views.add'),
+    path('add/subprocess/', 'bi.views.add_subprocess'),
+    path('add/graph/', 'bi.views.add_graph'),
+    re_path(r'^(?P<process_name>.+)/edit/status_method$', 'bi.views.change_status_calculation_method'),
+    re_path(r'^edit/(?P<process_type>.+?)/(?P<process_name>.+?)/?$', 'bi.views.edit'),
+    re_path(r'^json/(?P<process_type>.+?)/(?P<process_name>.+?)/?$', 'bi.views.json'),
+    re_path(r'^graphs/(?P<process_type>.+?)/(?P<process_name>.+?)/?$', 'bi.views.graphs_json'),
+    re_path(r'^delete/(?P<process_type>.+?)/(?P<process_name>.+?)/?$', 'bi.views.delete'),
+    re_path(r'^view/(?P<process_type>.+?)/(?P<process_name>.+?)/?$', 'bi.views.view'),
+    #(r'^/view/(?P<process_name>.+)/?$', 'bi.views.view'),
+]

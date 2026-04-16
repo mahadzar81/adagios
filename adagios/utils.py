@@ -27,7 +27,7 @@ import adagios.settings
 import os
 import pynag.Utils.misc
 from multiprocessing.pool import ThreadPool
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 SELENIUM_DRIVER = None
 

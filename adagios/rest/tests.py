@@ -26,7 +26,7 @@ from __future__ import unicode_literals
 from builtins import str
 from django.test import TestCase
 from django.test.client import Client, RequestFactory
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 import json
 import sys
 

@@ -20,7 +20,7 @@
 from builtins import str
 from django.test import TestCase
 from django.test.client import Client
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 import pynag.Parsers
 import os

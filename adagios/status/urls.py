@@ -15,49 +15,47 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url, patterns
+from django.urls import path, re_path
 
-urlpatterns = patterns('adagios',
-                        url(r'^/?$', 'status.views.status_index'),
-                        url(r'^/acknowledgements/?$', 'status.views.acknowledgement_list'),
-                        url(r'^/error/?$', 'status.views.error_page'),
-                        url(r'^/comments/?$', 'status.views.comment_list'),
-                        url(r'^/contacts/?$', 'status.views.contact_list'),
-                        url(r'^/contactgroups/?$', 'status.views.contactgroups'),
-                        url(r'^/dashboard/?$', 'status.views.dashboard'),
-                        url(r'^/detail/?$', 'status.views.detail'),
-                        url(r'^/downtimes/?$', 'status.views.downtime_list'),
-                        url(r'^/hostgroups/?$', 'status.views.status_hostgroups'),
-                        url(r'^/hosts/?$', 'status.views.hosts'),
-                        url(r'^/log/?$', 'status.views.log'),
-                        url(r'^/map/?', 'status.views.map_view'),
-                        url(r'^/parents/?$', 'status.views.network_parents'),
-                        url(r'^/perfdata/?$', 'status.views.perfdata'),
-                        url(r'^/perfdata2/?$', 'status.views.perfdata2'),
-                        url(r'^/problems/?$', 'status.views.problems'),
-                        url(r'^/servicegroups/?$', 'status.views.status_servicegroups'),
-                        url(r'^/services/?$', 'status.views.services'),
-                        url(r'^/state_history/?$', 'status.views.state_history'),
-                        url(r'^/backends/?$', 'status.views.backends'),
-
-
-
-                        # Misc snippets
-                        url(r'^/snippets/log/?$', 'status.views.snippets_log'),
-                        url(r'^/snippets/services/?$', 'status.views.snippets_services'),
-                        url(r'^/snippets/hosts/?$', 'status.views.snippets_hosts'),
-
-                        # Misc tests
-                        url(r'^/test/services/?$', 'status.views.services_js'),
-                        url(r'^/test/status_dt/?$', 'status.views.status_dt'),
-                        url(r'^/test/livestatus/?$', 'status.views.test_livestatus'),
-
-                        # Deprecated as of 2013-03-23
-                        url(r'^/contacts/(?P<contact_name>.+)/?$', 'status.views.contact_detail'),
-                        url(r'^/hostgroups/(?P<hostgroup_name>.+)/?$', 'status.views.status_hostgroup'),
-                        url(r'^/contactgroups/(?P<contactgroup_name>.+)/?$', 'status.views.contactgroup_detail'),
-                        url(r'^/servicegroups/(?P<servicegroup_name>.+)/?$', 'status.views.servicegroup_detail'),
-                        url(r'^/services_old/?$', 'status.views.status'),
+urlpatterns = [
+    path('', 'status.views.status_index'),
+    path('acknowledgements/', 'status.views.acknowledgement_list'),
+    path('error/', 'status.views.error_page'),
+    path('comments/', 'status.views.comment_list'),
+    path('contacts/', 'status.views.contact_list'),
+    path('contactgroups/', 'status.views.contactgroups'),
+    path('dashboard/', 'status.views.dashboard'),
+    path('detail/', 'status.views.detail'),
+    path('downtimes/', 'status.views.downtime_list'),
+    path('hostgroups/', 'status.views.status_hostgroups'),
+    path('hosts/', 'status.views.hosts'),
+    path('log/', 'status.views.log'),
+    re_path(r'^map/?$', 'status.views.map_view'),
+    path('parents/', 'status.views.network_parents'),
+    path('perfdata/', 'status.views.perfdata'),
+    path('perfdata2/', 'status.views.perfdata2'),
+    path('problems/', 'status.views.problems'),
+    path('servicegroups/', 'status.views.status_servicegroups'),
+    path('services/', 'status.views.services'),
+    path('state_history/', 'status.views.state_history'),
+    path('backends/', 'status.views.backends'),
 
 
-                        )
+
+    # Misc snippets
+    path('snippets/log/', 'status.views.snippets_log'),
+    path('snippets/services/', 'status.views.snippets_services'),
+    path('snippets/hosts/', 'status.views.snippets_hosts'),
+
+    # Misc tests
+    path('test/services/', 'status.views.services_js'),
+    path('test/status_dt/', 'status.views.status_dt'),
+    path('test/livestatus/', 'status.views.test_livestatus'),
+
+    # Deprecated as of 2013-03-23
+    re_path(r'^contacts/(?P<contact_name>.+)/?$', 'status.views.contact_detail'),
+    re_path(r'^hostgroups/(?P<hostgroup_name>.+)/?$', 'status.views.status_hostgroup'),
+    re_path(r'^contactgroups/(?P<contactgroup_name>.+)/?$', 'status.views.contactgroup_detail'),
+    re_path(r'^servicegroups/(?P<servicegroup_name>.+)/?$', 'status.views.servicegroup_detail'),
+    path('services_old/', 'status.views.status'),
+]

@@ -15,27 +15,28 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url, patterns, include
+from django.urls import path, include, re_path
 from adagios import settings
 from django.views.static import serve
+from django.views.i18n import JavaScriptCatalog
+from adagios import views
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     # Example:
-    url(r'^$', 'adagios.views.index', name="home"),
-    url(r'^403', 'adagios.views.http_403'),
-    url(r'^objectbrowser', include('adagios.objectbrowser.urls')),
-    url(r'^status', include('adagios.status.urls')),
-    url(r'^bi', include('adagios.bi.urls')),
-    url(r'^misc', include('adagios.misc.urls')),
-    url(r'^pnp', include('adagios.pnp.urls')),
-    url(r'^media(?P<path>.*)$',         serve, {'document_root': settings.STATIC_ROOT }),
-    url(r'^rest', include('adagios.rest.urls')),
-    url(r'^contrib', include('adagios.contrib.urls')),
+    path('', views.index, name="home"),
+    path('403', views.http_403),
+    path('objectbrowser/', include('adagios.objectbrowser.urls')),
+    path('status/', include('adagios.status.urls')),
+    path('bi/', include('adagios.bi.urls')),
+    path('misc/', include('adagios.misc.urls')),
+    path('pnp/', include('adagios.pnp.urls')),
+    re_path(r'^media(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
+    path('rest/', include('adagios.rest.urls')),
+    path('contrib/', include('adagios.contrib.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
@@ -44,13 +45,13 @@ urlpatterns = patterns(
     # (r'^admin/', include(admin.site.urls)),
 
     # Internationalization
-    url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog'),
-)
+    path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
+]
 
 if settings.DEBUG:
-    urlpatterns += patterns('',
-        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}, name="media"),
-    )
+    urlpatterns += [
+        re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}, name="media"),
+    ]
         
 
 # from django.contrib.staticfiles.urls import staticfiles_urlpatterns
