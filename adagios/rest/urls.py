@@ -15,14 +15,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url, patterns
+from django.urls import path, re_path
 
-urlpatterns = patterns('adagios',
-                       url(r'^/?$', 'rest.views.list_modules'),
-                       )
-
-
-
+urlpatterns = [
+    path('', 'rest.views.list_modules'),
+]
 # Example:
 # rest_modules['module_name'] = 'module_path'
 # will make /adagios/rest/module_name/ available and it loads all
@@ -36,15 +33,15 @@ rest_modules['adagios'] = 'adagios.misc.rest'
 
 
 # We are going to generate some url patterns, for clarification here is the end result shown for the status module:
-#url(r'^/status/$', 'rest.views.index', { 'module_name': 'adagios.rest.status'    }, name="rest/status"),
-#url(r'^/status.js$', 'rest.views.javascript', { 'module_name': 'adagios.rest.status'    }, ),
+#path('/status/', 'rest.views.index', { 'module_name': 'adagios.rest.status'    }, name="rest/status"),
+#path('/status.js', 'rest.views.javascript', { 'module_name': 'adagios.rest.status'    }, ),
 #(r'^/status/(?P<format>.+?)/(?P<attribute>.+?)/?$', 'rest.views.handle_request', { 'module_name': 'adagios.rest.status' }),
 
 for module_name, module_path in list(rest_modules.items()):
     base_pattern = r'^/%s' % module_name
     args = {'module_name': module_name, 'module_path': module_path}
-    urlpatterns += patterns('adagios',
-        url(base_pattern + '/$',   'rest.views.index', args, name="rest/%s" % module_name),
-        url(base_pattern + '.js$', 'rest.views.javascript', args, ),
-        url(base_pattern + '/(?P<format>.+?)/(?P<attribute>.+?)/?$', 'rest.views.handle_request', args),
-    )
+    urlpatterns += [
+        path('%s/$' % module_name, 'rest.views.index', args, name="rest/%s" % module_name),
+        path('%s.js' % module_name, 'rest.views.javascript', args),
+        re_path(r'^%s/(?P<format>.+?)/(?P<attribute>.+?)/?$' % module_name, 'rest.views.handle_request', args),
+    ]

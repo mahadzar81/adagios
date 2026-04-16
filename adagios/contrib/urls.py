@@ -15,12 +15,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url, patterns
+from django.urls import path, re_path
 
-urlpatterns = patterns('adagios',
-                      url(r'^/$', 'contrib.views.index'),
-                      url(r'^/(?P<arg1>.+)?$', 'contrib.views.contrib'),
-                      url(r'^/(?P<arg1>.+)/(?P<arg2>.+)/?$', 'contrib.views.contrib'),
-                      url(r'^/(?P<arg1>.+)(?P<arg2>.+)/(?P<arg3>.+)/?$', 'contrib.views.contrib'),
-                      url(r'^/(?P<arg1>.+)(?P<arg2>.+)/(?P<arg3>.+)/(?P<arg4>.+)/?$', 'contrib.views.contrib'),
-                       )
+urlpatterns = [
+    path('', 'contrib.views.index'),
+    re_path(r'^(?P<arg1>.+)?$', 'contrib.views.contrib'),
+    re_path(r'^(?P<arg1>.+)/(?P<arg2>.+)/?$', 'contrib.views.contrib'),
+    re_path(r'^(?P<arg1>.+)(?P<arg2>.+)/(?P<arg3>.+)/?$', 'contrib.views.contrib'),
+    re_path(r'^(?P<arg1>.+)(?P<arg2>.+)/(?P<arg3>.+)/(?P<arg4>.+)/?$', 'contrib.views.contrib'),
+]

@@ -23,7 +23,7 @@ from pynag.Utils import PynagError
 from adagios import settings
 import subprocess
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 def run_pnp(pnp_command, **kwargs):

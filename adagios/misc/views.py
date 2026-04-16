@@ -21,7 +21,7 @@ from django.core.context_processors import csrf
 from django.forms.formsets import BaseFormSet
 from django.shortcuts import render_to_response
 from django.shortcuts import render
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from django.shortcuts import HttpResponse
 from django.template import RequestContext

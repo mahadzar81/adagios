@@ -34,7 +34,7 @@ from pynag import __version__
 from socket import gethostbyname_ex
 import adagios.settings
 from adagios.daemon import Daemon
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 #_config = Parsers.config(adagios.settings.nagios_config)
@@ -343,7 +343,7 @@ def check_command(host_name, service_description, name=None, check_command=None,
         macros['effective_command_line'] = my_object.get_effective_command_line()
 
         # Lets get all macros that this check command defines:
-        regex = re.compile("(\$\w+\$)")
+        regex = re.compile(r"(\$\w+\$)")
         macronames = regex.findall(command.command_line)
         for i in macronames:
             macros[i] = my_object.get_macro(i) or ''

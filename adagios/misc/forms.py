@@ -24,7 +24,7 @@ from django.core.mail import send_mail
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.utils.encoding import smart_str
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 import os.path
 from adagios import settings
@@ -599,7 +599,7 @@ class SendEmailForm(forms.Form):
         from_address = self._resolve_remote_user(self.remote_user)
         # Check if _resolve_remote_user did in fact return an email address - avoid SMTPSenderRefused.
         import re # re built in Py1.5+
-        if re.compile('([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)').search(from_address) is None:
+        if re.compile(r'([\w\-\.]+@(\w[\w\-]+\.)+[\w\-]+)').search(from_address) is None:
             from_address = str(from_address) + '@no.domain'
         to_address = self.cleaned_data['to']
         to_address = to_address.split(',')

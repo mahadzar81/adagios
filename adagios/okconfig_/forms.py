@@ -23,7 +23,7 @@ from django.core.exceptions import ValidationError
 import socket
 from pynag import Model
 from adagios.forms import AdagiosForm
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 def get_all_hosts():
@@ -70,7 +70,7 @@ class ScanNetworkForm(AdagiosForm):
         if hostname[-1:] == ".":
             # strip exactly one dot from the right, if present
             hostname = hostname[:-1]
-        allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
+        allowed = re.compile(r"(?!-[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
         for x in hostname.split("."):
             if allowed.match(x) is False:
                 return False

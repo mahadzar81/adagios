@@ -28,7 +28,7 @@ from adagios.views import adagios_decorator, error_page
 from django.template import RequestContext
 from adagios.contrib import get_template_name
 from django import template
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 @adagios_decorator
