@@ -17,11 +17,10 @@
 
 import simplejson
 from django.http import HttpResponse
-from django.shortcuts import render_to_response, redirect
-from django.template import RequestContext
-from django.core.context_processors import csrf
-from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext as _
+from django.shortcuts import render, redirect, redirect
+# csrf is handled automatically by Django middleware
+from django.urls import reverse
+from django.utils.translation import gettext as _
 from adagios.pnp.functions import run_pnp
 from adagios.views import adagios_decorator
 
@@ -82,7 +81,7 @@ def edit(request, process_name, process_type):
         # to it.
         bp = adagios.bi.get_business_process(process_name)
 
-    return render_to_response('business_process_edit.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'business_process_edit.html', locals())
 
 
 @adagios_decorator
@@ -131,7 +130,7 @@ def add_graph(request):
                 raise e
         return redirect('adagios.bi.views.edit', bp.process_type, bp.name)
 
-    return render_to_response('business_process_add_graph.html', c, context_instance=RequestContext(request))
+    return render(request, 'business_process_add_graph.html', c)
 
 
 @adagios_decorator
@@ -147,7 +146,7 @@ def view(request, process_name, process_type=None):
         'adagios.bi.views.graphs_json', kwargs={"process_type":process_type, "process_name": process_name})
     c['bp'] = bp
     c['graphs_url'] = graphs_url
-    return render_to_response('business_process_view.html', c, context_instance=RequestContext(request))
+    return render(request, 'business_process_view.html', c)
 
 
 @adagios_decorator
@@ -233,7 +232,7 @@ def add_subprocess(request):
         return redirect('adagios.bi.views.edit', bp.process_type, bp.name)
     c['subprocesses'] = process_list
     c['parameters'] = parameters
-    return render_to_response('business_process_add_subprocess.html', c, context_instance=RequestContext(request))
+    return render(request, 'business_process_add_subprocess.html', c)
 
 
 @adagios_decorator
@@ -254,7 +253,7 @@ def add(request):
         if form.is_valid():
             form.save()
             return redirect('adagios.bi.views.edit', bp.process_type, bp.name)
-    return render_to_response('business_process_edit.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'business_process_edit.html', locals())
 
 
 @adagios_decorator
@@ -265,7 +264,7 @@ def index(request):
     c['messages'] = []
     c['errors'] = []
     processes = adagios.bi.get_all_processes()
-    return render_to_response('business_process_list.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'business_process_list.html', locals())
 
 
 @adagios_decorator
@@ -279,7 +278,7 @@ def delete(request, process_name, process_type):
         form.delete()
         return redirect('adagios.bi.views.index')
 
-    return render_to_response('business_process_delete.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'business_process_delete.html', locals())
 
 
 @adagios_decorator

@@ -18,13 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #from __future__ import unicode_literals
-from builtins import str
-#from past.builtins import six.string_types
-from future.utils import string_types
+#from past.builtins import six.str
 from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_str
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from pynag import Model
 from pynag.Utils import AttributeList
@@ -133,7 +131,7 @@ class PynagAutoCompleteField(forms.CharField):
         """
         if value == 'null':
             return value
-        elif isinstance(value, string_types):
+        elif isinstance(value, str):
             a = AttributeList(value)
             self.__prefix = a.operator
             a.operator = ''
@@ -171,7 +169,7 @@ class PynagChoiceField(forms.MultipleChoiceField):
         """
         if value is None:
             return []
-        if isinstance(value, string_types):
+        if isinstance(value, str):
             self.attributelist = AttributeList(value)
             self.__prefix = self.attributelist.operator
             return self.attributelist.fields

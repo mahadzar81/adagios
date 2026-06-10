@@ -21,12 +21,10 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
-from __future__ import unicode_literals
 #from django.utils.encoding import force_text
-from builtins import str
 from django.test import TestCase
 from django.test.client import Client, RequestFactory
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 import json
 import sys
 

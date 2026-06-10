@@ -1,63 +1,40 @@
-# Adagios is a web based Nagios configuration interface
-#
-# Copyright (C) 2014, Pall Sigurdsson <palli@opensource.is>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
-# 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-# 
-# You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from django.urls import re_path
+import adagios.status.views
 
-from django.conf.urls import url, patterns
-
-urlpatterns = patterns('adagios',
-                        url(r'^/?$', 'status.views.status_index'),
-                        url(r'^/acknowledgements/?$', 'status.views.acknowledgement_list'),
-                        url(r'^/error/?$', 'status.views.error_page'),
-                        url(r'^/comments/?$', 'status.views.comment_list'),
-                        url(r'^/contacts/?$', 'status.views.contact_list'),
-                        url(r'^/contactgroups/?$', 'status.views.contactgroups'),
-                        url(r'^/dashboard/?$', 'status.views.dashboard'),
-                        url(r'^/detail/?$', 'status.views.detail'),
-                        url(r'^/downtimes/?$', 'status.views.downtime_list'),
-                        url(r'^/hostgroups/?$', 'status.views.status_hostgroups'),
-                        url(r'^/hosts/?$', 'status.views.hosts'),
-                        url(r'^/log/?$', 'status.views.log'),
-                        url(r'^/map/?', 'status.views.map_view'),
-                        url(r'^/parents/?$', 'status.views.network_parents'),
-                        url(r'^/perfdata/?$', 'status.views.perfdata'),
-                        url(r'^/perfdata2/?$', 'status.views.perfdata2'),
-                        url(r'^/problems/?$', 'status.views.problems'),
-                        url(r'^/servicegroups/?$', 'status.views.status_servicegroups'),
-                        url(r'^/services/?$', 'status.views.services'),
-                        url(r'^/state_history/?$', 'status.views.state_history'),
-                        url(r'^/backends/?$', 'status.views.backends'),
-
-
-
-                        # Misc snippets
-                        url(r'^/snippets/log/?$', 'status.views.snippets_log'),
-                        url(r'^/snippets/services/?$', 'status.views.snippets_services'),
-                        url(r'^/snippets/hosts/?$', 'status.views.snippets_hosts'),
-
-                        # Misc tests
-                        url(r'^/test/services/?$', 'status.views.services_js'),
-                        url(r'^/test/status_dt/?$', 'status.views.status_dt'),
-                        url(r'^/test/livestatus/?$', 'status.views.test_livestatus'),
-
-                        # Deprecated as of 2013-03-23
-                        url(r'^/contacts/(?P<contact_name>.+)/?$', 'status.views.contact_detail'),
-                        url(r'^/hostgroups/(?P<hostgroup_name>.+)/?$', 'status.views.status_hostgroup'),
-                        url(r'^/contactgroups/(?P<contactgroup_name>.+)/?$', 'status.views.contactgroup_detail'),
-                        url(r'^/servicegroups/(?P<servicegroup_name>.+)/?$', 'status.views.servicegroup_detail'),
-                        url(r'^/services_old/?$', 'status.views.status'),
-
-
-                        )
+urlpatterns = [
+    re_path(r'^/?$', adagios.status.views.status_index),
+    re_path(r'^/acknowledgements/?$', adagios.status.views.acknowledgement_list),
+    re_path(r'^/error/?$', adagios.status.views.error_page),
+    re_path(r'^/comments/?$', adagios.status.views.comment_list),
+    re_path(r'^/contacts/?$', adagios.status.views.contact_list),
+    re_path(r'^/contactgroups/?$', adagios.status.views.contactgroups),
+    re_path(r'^/dashboard/?$', adagios.status.views.dashboard),
+    re_path(r'^/detail/?$', adagios.status.views.detail),
+    re_path(r'^/downtimes/?$', adagios.status.views.downtime_list),
+    re_path(r'^/hostgroups/?$', adagios.status.views.status_hostgroups),
+    re_path(r'^/hosts/?$', adagios.status.views.hosts),
+    re_path(r'^/log/?$', adagios.status.views.log),
+    re_path(r'^/map/?', adagios.status.views.map_view),
+    re_path(r'^/parents/?$', adagios.status.views.network_parents),
+    re_path(r'^/perfdata/?$', adagios.status.views.perfdata),
+    re_path(r'^/perfdata2/?$', adagios.status.views.perfdata2),
+    re_path(r'^/problems/?$', adagios.status.views.problems),
+    re_path(r'^/servicegroups/?$', adagios.status.views.status_servicegroups),
+    re_path(r'^/services/?$', adagios.status.views.services),
+    re_path(r'^/state_history/?$', adagios.status.views.state_history),
+    re_path(r'^/backends/?$', adagios.status.views.backends),
+    # Snippets
+    re_path(r'^/snippets/log/?$', adagios.status.views.snippets_log),
+    re_path(r'^/snippets/services/?$', adagios.status.views.snippets_services),
+    re_path(r'^/snippets/hosts/?$', adagios.status.views.snippets_hosts),
+    # Tests
+    re_path(r'^/test/services/?$', adagios.status.views.services_js),
+    re_path(r'^/test/status_dt/?$', adagios.status.views.status_dt),
+    re_path(r'^/test/livestatus/?$', adagios.status.views.test_livestatus),
+    # Deprecated
+    re_path(r'^/contacts/(?P<contact_name>.+)/?$', adagios.status.views.contact_detail),
+    re_path(r'^/hostgroups/(?P<hostgroup_name>.+)/?$', adagios.status.views.status_hostgroup),
+    re_path(r'^/contactgroups/(?P<contactgroup_name>.+)/?$', adagios.status.views.contactgroup_detail),
+    re_path(r'^/servicegroups/(?P<servicegroup_name>.+)/?$', adagios.status.views.servicegroup_detail),
+    re_path(r'^/services_old/?$', adagios.status.views.status),
+]

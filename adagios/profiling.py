@@ -24,8 +24,6 @@
 # https://github.com/opinkerfi/adagios/wiki/Profiling-Decorators-within-Adagios
 
 
-from __future__ import absolute_import
-from builtins import str
 import cProfile
 import os
 import time

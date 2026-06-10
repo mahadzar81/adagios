@@ -1,4 +1,3 @@
-from __future__ import division
 # Adagios is a web based Nagios configuration interface
 #
 # Copyright (C) 2014, Pall Sigurdsson <palli@opensource.is>
@@ -16,9 +15,6 @@ from __future__ import division
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from builtins import str
-from builtins import object
-from past.utils import old_div
 from pynag.Utils import PynagError, defaultdict
 
 __author__ = 'palli'
@@ -30,7 +26,7 @@ import adagios.pnp.functions
 import adagios.settings
 import time
 import adagios.status.utils
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 import socket
 
 
@@ -292,23 +288,23 @@ class BusinessProcess(object):
         elif macroname == 'percent_state_0':
             if len(self.get_all_states()) == 0:
                 return 0
-            return old_div(100.0 * state_summary[0], sum(state_summary))
+            return (100.0 * state_summary[0] / sum(state_summary))
         elif macroname == 'percent_state_1':
             if len(self.get_all_states()) == 0:
                 return 0
-            return old_div(100.0 * state_summary[1], sum(state_summary))
+            return (100.0 * state_summary[1] / sum(state_summary))
         elif macroname == 'percent_state_2':
             if len(self.get_all_states()) == 0:
                 return 0
-            return old_div(100.0 * state_summary[2], sum(state_summary))
+            return (100.0 * state_summary[2] / sum(state_summary))
         elif macroname == 'percent_state_3':
             if len(self.get_all_states()) == 0:
                 return 0
-            return old_div(100.0 * state_summary[3], sum(state_summary))
+            return (100.0 * state_summary[3] / sum(state_summary))
         elif macroname == 'percent_problems':
             if len(self.get_all_states()) == 0:
                 return 0
-            return old_div(100.0 * sum(state_summary[1:]), sum(state_summary))
+            return (100.0 * sum(state_summary[1:]) / sum(state_summary))
         elif macroname == 'current_state':
             return self.get_status()
         elif macroname == 'friendly_state':

@@ -17,8 +17,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
-from builtins import object
 import adagios.status.utils
 import adagios
 import pynag.Model
@@ -27,7 +25,7 @@ import adagios.settings
 import os
 import pynag.Utils.misc
 from multiprocessing.pool import ThreadPool
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 SELENIUM_DRIVER = None
 

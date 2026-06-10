@@ -16,21 +16,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Create your views here.
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from past.builtins import cmp
-from future.utils import string_types
-from builtins import map
-from builtins import str
-from django.shortcuts import render_to_response, redirect, render
+from django.shortcuts import render, redirect
 from django.core import serializers
 from django.http import HttpResponse, HttpResponseServerError
 import json
-#from django.core.context_processors import csrf
+## csrf is handled automatically by Django middleware
 from django.views.decorators.csrf import csrf_exempt
-from django.template import RequestContext
-from django.core.urlresolvers import resolve
+from django.urls import resolve
 from adagios.views import adagios_decorator
 
 import inspect
@@ -69,7 +61,7 @@ def handle_request(request, module_name, module_path, attribute, format):
             c['docstring'] = docstring
             c['module_name'] = module_name
             if not list(request.GET.items()):
-                return render_to_response('function_form.html', c, context_instance=RequestContext(request))
+                return render(request, 'function_form.html', c)
             # Handle get parameters
             arguments = {}
             for k, v in list(request.GET.items()):
@@ -125,7 +117,7 @@ def list_modules(request):
 
     """
     rest_modules = adagios.rest.urls.rest_modules
-    return render_to_response('list_modules.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'list_modules.html', locals())
 
 
 @adagios_decorator
@@ -151,7 +143,7 @@ def index(request, module_name, module_path):
     c['gets'] = gets
     c['puts'] = puts
     c['module_documenation'] = inspect.getdoc(m)
-    return render_to_response('index.html', c, context_instance=RequestContext(request))
+    return render(request, 'index.html', c)
 
 
 def javascript(request, module_name, module_path):

@@ -16,13 +16,10 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
 from django.test import TestCase
 from django.test.client import Client
-from django.utils.translation import ugettext as _
-from django.core.urlresolvers import reverse
+from django.utils.translation import gettext as _
+from django.urls import reverse
 from django.http import QueryDict
 import pynag.Model
 import adagios.settings

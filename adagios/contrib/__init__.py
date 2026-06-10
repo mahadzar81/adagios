@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 def get_template_name(base_path, *args):
     """ Return a full path to a template named base_path/args[0]

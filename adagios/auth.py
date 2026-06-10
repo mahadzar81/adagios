@@ -19,8 +19,6 @@
 
 """
 
-from builtins import str
-from builtins import object
 import adagios.status.utils
 import adagios.views
 
@@ -167,11 +165,18 @@ def check_role(request, role):
         raise adagios.exceptions.AccessDenied(username=user, access_required=role, message=message)
 
 
-class AuthorizationMiddleWare(object):
-    """ Django MiddleWare class. It's responsibility is to check if an adagios user has access
+class AuthorizationMiddleWare:
+    """ Django MiddleWare class. Its responsibility is to check if an adagios user has access.
 
-    if user does not have access to a given view, it is given a 403 error.
+    If user does not have access to a given view, it is given a 403 error.
     """
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        return response
+
     def process_request(self, request):
         return None
 

@@ -17,8 +17,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.core.context_processors import csrf
-from django.shortcuts import render_to_response
+# csrf is handled automatically by Django middleware
+from django.shortcuts import render, redirect
 from django.shortcuts import HttpResponse
 from adagios.pnp.functions import run_pnp
 from adagios.views import adagios_decorator
