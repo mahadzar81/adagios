@@ -16,8 +16,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Create your views here.
-from django.core.context_processors import csrf
-from django.shortcuts import render_to_response
+# csrf is handled automatically by Django middleware
+from django.shortcuts import render, redirect
 from django.shortcuts import HttpResponse
 from django.shortcuts import RequestContext
 
@@ -25,5 +25,5 @@ from django.shortcuts import RequestContext
 def hello_world(request):
     """ This is an example view. """
     c = {}
-    return render_to_response("myapp_helloworld.html", c, context_instance=RequestContext(request))
+    return render(request, "myapp_helloworld.html", c)
 

@@ -24,7 +24,6 @@ Convenient stateless functions for pynag. This module is used by the /rest/ inte
 """
 
 
-from builtins import str
 import platform
 import re
 from pynag import Model
@@ -34,7 +33,7 @@ from pynag import __version__
 from socket import gethostbyname_ex
 import adagios.settings
 from adagios.daemon import Daemon
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 #_config = Parsers.config(adagios.settings.nagios_config)

@@ -17,9 +17,7 @@
 
 # Django settings for adagios project.
 
-from past.builtins import execfile
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 USE_TZ = True
 
 # Hack to allow relative template paths
@@ -83,20 +81,35 @@ STATIC_ROOT = '%s/media/' % djangopath
 #ADMIN_MEDIA_PREFIX = '/media/'
 
 # List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            "%s/templates" % djangopath,
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'adagios.context_processors.on_page_load',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.static',
+                'django.template.context_processors.request',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'adagios.auth.AuthorizationMiddleWare',
-    #'django.contrib.auth.middleware.AuthenticationMiddleware',
-    #'django.contrib.messages.middleware.MessageMiddleware',
-)
+    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # 'django.contrib.messages.middleware.MessageMiddleware',
+]
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
@@ -110,13 +123,6 @@ LOCALE_PATHS = (
 )
 
 ROOT_URLCONF = 'adagios.urls'
-
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    "%s/templates" % (djangopath),
-)
 
 INSTALLED_APPS = [
     #'django.contrib.auth',
@@ -136,14 +142,7 @@ INSTALLED_APPS = [
     'adagios.contrib',
 ]
 
-TEMPLATE_CONTEXT_PROCESSORS = ('adagios.context_processors.on_page_load',
-    #"django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    #"django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.core.context_processors.request",
-    "django.contrib.messages.context_processors.messages")
+
 
 
 # Themes options #
@@ -298,11 +297,11 @@ def reload_configfile(adagios_configfile=None):
             adagios_configfile = alternative_adagios_configfile
             open(adagios_configfile, "a").close()
 
-        execfile(adagios_configfile, globals())
+        exec(open(adagios_configfile).read(), globals())
         # if config has any default include, lets include that as well
         configfiles = glob(include)
         for configfile in configfiles:
-            execfile(configfile, globals())
+            exec(open(configfile).read(), globals())
     except IOError as e:
         warn('Unable to open %s: %s' % (adagios_configfile, e.strerror))
 
@@ -331,7 +330,6 @@ if not django_secret_key:
 else:
     SECRET_KEY = django_secret_key
 
-ALLOWED_INCLUDE_ROOTS = (serverside_includes,)
 
 if enable_status_view:
     #plugins['status'] = 'adagios.status'

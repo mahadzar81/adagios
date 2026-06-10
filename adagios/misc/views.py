@@ -17,14 +17,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.core.context_processors import csrf
+# csrf is handled automatically by Django middleware
 from django.forms.formsets import BaseFormSet
-from django.shortcuts import render_to_response
+from django.shortcuts import render, redirect
 from django.shortcuts import render
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from django.shortcuts import HttpResponse
-from django.template import RequestContext
 from adagios.misc import forms
 import os
 import mimetypes
@@ -59,7 +58,7 @@ def index(request):
     c = {}
     c['nagios_cfg'] = pynag.Model.config.cfg_file
     c['version'] = __version__
-    return render_to_response('frontpage.html', c, context_instance=RequestContext(request))
+    return render(request, 'frontpage.html', c)
 
 @adagios_decorator
 def settings(request):
@@ -81,7 +80,7 @@ def settings(request):
     else:
         raise Exception(_("We only support methods GET or POST"))
     c['form'] = form
-    return render_to_response('settings.html', c, context_instance=RequestContext(request))
+    return render(request, 'settings.html', c)
 
 
 @adagios_decorator
@@ -92,7 +91,7 @@ def nagios(request):
 def iframe(request, url=None):
     if not url:
         url = request.GET.get('url', None)
-    return render_to_response('iframe.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'iframe.html', locals())
 
 
 @adagios_decorator
@@ -173,7 +172,7 @@ def gitlog(request):
             c['commit_id'] = commit
     except Exception as e:
         c['errors'].append(e)
-    return render_to_response('gitlog.html', c, context_instance=RequestContext(request))
+    return render(request, 'gitlog.html', c)
 
 
 @adagios_decorator
@@ -208,7 +207,7 @@ def nagios_service(request):
         c['friendly_status'] = "not running"
     needs_reload = pynag.Model.config.needs_reload()
     c['needs_reload'] = needs_reload
-    return render_to_response('nagios_service.html', c, context_instance=RequestContext(request))
+    return render(request, 'nagios_service.html', c)
 
 
 @adagios_decorator
@@ -250,7 +249,7 @@ def pnp4nagios(request):
             c['npcd_config'].save()
             m.append(_("npcd.cfg updated"))
 
-    return render_to_response('pnp4nagios.html', c, context_instance=RequestContext(request))
+    return render(request, 'pnp4nagios.html', c)
 
 
 @adagios_decorator
@@ -273,7 +272,7 @@ def edit_file(request, filename):
                 c['form'].save()
     except Exception as e:
         c['errors'].append(e)
-    return render_to_response('editfile.html', c, context_instance=RequestContext(request))
+    return render(request, 'editfile.html', c)
 
 
 @adagios_decorator
@@ -320,7 +319,7 @@ def icons(request, image_name=None):
     if not image_name:
         # Return a list of images
         c['images'] = filenames
-        return render_to_response('icons.html', c, context_instance=RequestContext(request))
+        return render(request, 'icons.html', c)
     else:
         if image_name in filenames:
             file_extension = image_name.split('.').pop()
@@ -392,7 +391,7 @@ def mail(request):
         request, "snippets/misc_mail_objectlist.html", c).content
     if request.method == 'POST' and c['form'].is_valid():
         c['form'].save()
-    return render_to_response('misc_mail.html', c, context_instance=RequestContext(request))
+    return render(request, 'misc_mail.html', c)
 
 
 
@@ -412,7 +411,7 @@ def test(request):
     else:
         c['form'] = forms.PluginOutputForm(initial=request.GET)
 
-    return render_to_response('test.html', c, context_instance=RequestContext(request))
+    return render(request, 'test.html', c)
 
 
 @adagios_decorator
@@ -431,7 +430,7 @@ def paste(request):
     else:
         c['form'] = forms.PasteForm(initial=request.GET)
 
-    return render_to_response('test2.html', c, context_instance=RequestContext(request))
+    return render(request, 'test2.html', c)
 
 @adagios_decorator
 def preferences(request):
@@ -451,4 +450,4 @@ def preferences(request):
     else:
         c['form'] = forms.UserdataForm(initial=user.to_dict())
 
-    return render_to_response('userdata.html', c, context_instance=RequestContext(request))
+    return render(request, 'userdata.html', c)

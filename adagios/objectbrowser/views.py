@@ -17,13 +17,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from builtins import str
-from django.shortcuts import render_to_response, redirect, HttpResponse, Http404
+from django.shortcuts import render, redirect, redirect, HttpResponse, Http404
 from django.http import HttpResponseRedirect
-from django.template import RequestContext
-from django.core.context_processors import csrf
-from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext as _
+# csrf is handled automatically by Django middleware
+from django.urls import reverse
+from django.utils.translation import gettext as _
 import os
 from os.path import dirname
 
@@ -48,7 +46,7 @@ def home(request):
 def list_object_types(request):
     """ Collects statistics about pynag objects and returns to template """
     c = {}
-    return render_to_response('list_object_types.html', c, context_instance=RequestContext(request))
+    return render(request, 'list_object_types.html', c)
 
 
 @adagios_decorator
@@ -74,7 +72,7 @@ def geek_edit(request, object_id):
         else:
             c['error_summary'] = _('Unable to find object')
             c['error'] = e
-            return render_to_response('error.html', c, context_instance=RequestContext(request))
+            return render(request, 'error.html', c)
     c['my_object'] = o
     if request.method == 'POST':
         # Manual edit of the form
@@ -85,10 +83,10 @@ def geek_edit(request, object_id):
                 m.append("Object Saved manually to '%s'" % o['filename'])
             except Exception as e:
                 c['errors'].append(e)
-                return render_to_response('edit_object.html', c, context_instance=RequestContext(request))
+                return render(request, 'edit_object.html', c)
         else:
             c['errors'].append(_("Problem with saving object"))
-            return render_to_response('edit_object.html', c, context_instance=RequestContext(request))
+            return render(request, 'edit_object.html', c)
     else:
         form = GeekEditObjectForm(
             initial={'definition': o['meta']['raw_definition'], })
@@ -121,7 +119,7 @@ def advanced_edit(request, object_id):
         else:
             c['error_summary'] = _('Unable to get object')
             c['error'] = e
-            return render_to_response('error.html', c, context_instance=RequestContext(request))
+            return render(request, 'error.html', c)
 
     if request.method == 'POST':
         # User is posting data into our form
@@ -133,10 +131,10 @@ def advanced_edit(request, object_id):
                 m.append(_("Object Saved to %(filename)s") % o)
             except Exception as e:
                 c['errors'].append(e)
-                return render_to_response('edit_object.html', c, context_instance=RequestContext(request))
+                return render(request, 'edit_object.html', c)
     else:
             c['errors'].append(_("Problem reading form input"))
-            return render_to_response('edit_object.html', c, context_instance=RequestContext(request))
+            return render(request, 'edit_object.html', c)
 
     return HttpResponseRedirect(reverse('edit_object', args=[o.get_id()]))
 
@@ -168,7 +166,7 @@ def edit_object(request, object_id=None):
         except KeyError:
             c['error_summary'] = _('Could not find any object with id="%(object_id)s" :/') % {'object_id': object_id}
             c['error_type'] = _("object not found")
-            return render_to_response('error.html', c, context_instance=RequestContext(request))
+            return render(request, 'error.html', c)
 
     if request.method == 'POST':
         # User is posting data into our form
@@ -233,7 +231,7 @@ def edit_object(request, object_id=None):
     elif my_object['object_type'] == 'timeperiod':
         return _edit_timeperiod(request, c)
     else:
-        return render_to_response('edit_object.html', c, context_instance=RequestContext(request))
+        return render(request, 'edit_object.html', c)
 
 
 @pynag.Utils.cache_only
@@ -245,7 +243,7 @@ def _edit_contact(request, c):
     except KeyError as e:
         c['errors'].append(_("Could not find contact: %(error)s") % {'error': str(e)})
 
-    return render_to_response('edit_contact.html', c, context_instance=RequestContext(request))
+    return render(request, 'edit_contact.html', c)
 
 
 @pynag.Utils.cache_only
@@ -322,7 +320,7 @@ def _edit_service(request, c):
     host_name = service.host_name or ''
     if ',' in host_name:
         c['errors'].append(_("This Service is applied to multiple hosts"))
-    return render_to_response('edit_service.html', c, context_instance=RequestContext(request))
+    return render(request, 'edit_service.html', c)
 
 
 @pynag.Utils.cache_only
@@ -344,7 +342,7 @@ def _edit_contactgroup(request, c):
             contactgroup_members__has_field=c['my_object'].contactgroup_name)
     except Exception as e:
         c['errors'].append(e)
-    return render_to_response('edit_contactgroup.html', c, context_instance=RequestContext(request))
+    return render(request, 'edit_contactgroup.html', c)
 
 
 @pynag.Utils.cache_only
@@ -361,7 +359,7 @@ def _edit_hostgroup(request, c):
             hostgroup_members__has_field=c['my_object'].hostgroup_name)
     except Exception as e:
         c['errors'].append(e)
-    return render_to_response('edit_hostgroup.html', c, context_instance=RequestContext(request))
+    return render(request, 'edit_hostgroup.html', c)
 
 
 @pynag.Utils.cache_only
@@ -372,31 +370,31 @@ def _edit_servicegroup(request, c):
             servicegroup_members__has_field=c['my_object'].servicegroup_name)
     except Exception as e:
         c['errors'].append(e)
-    return render_to_response('edit_servicegroup.html', c, context_instance=RequestContext(request))
+    return render(request, 'edit_servicegroup.html', c)
 
 
 @pynag.Utils.cache_only
 def _edit_command(request, c):
     """ This is a helper function to edit_object """
-    return render_to_response('edit_command.html', c, context_instance=RequestContext(request))
+    return render(request, 'edit_command.html', c)
 
 
 @pynag.Utils.cache_only
 def _edit_hostdependency(request, c):
     """ This is a helper function to edit_object """
-    return render_to_response('edit_hostdepedency.html', c, context_instance=RequestContext(request))
+    return render(request, 'edit_hostdepedency.html', c)
 
 
 @pynag.Utils.cache_only
 def _edit_servicedependency(request, c):
     """ This is a helper function to edit_object """
-    return render_to_response('_edit_servicedependency.html', c, context_instance=RequestContext(request))
+    return render(request, '_edit_servicedependency.html', c)
 
 
 @pynag.Utils.cache_only
 def _edit_timeperiod(request, c):
     """ This is a helper function to edit_object """
-    return render_to_response('edit_timeperiod.html', c, context_instance=RequestContext(request))
+    return render(request, 'edit_timeperiod.html', c)
 
 
 @pynag.Utils.cache_only
@@ -457,7 +455,7 @@ def _edit_host(request, c):
     except Exception:
         pass
 
-    return render_to_response('edit_host.html', c, context_instance=RequestContext(request))
+    return render(request, 'edit_host.html', c)
 
 @adagios_decorator
 def show_plugins(request):
@@ -491,7 +489,7 @@ def show_plugins(request):
             missing_plugins.append((check_command, command_name))
     c['missing_plugins'] = missing_plugins
     c['existing_plugins'] = existing_plugins
-    return render_to_response('show_plugins.html', c, context_instance=RequestContext(request))
+    return render(request, 'show_plugins.html', c)
 
 
 @adagios_decorator
@@ -528,7 +526,7 @@ def edit_nagios_cfg(request):
                        'mispelled.')
             })
     c['content'] = sorted(c['content'], key=lambda cfgitem: cfgitem['key'])
-    return render_to_response('edit_configfile.html', c, context_instance=RequestContext(request))
+    return render(request, 'edit_configfile.html', c)
 
 
 @adagios_decorator
@@ -565,7 +563,7 @@ def bulk_edit(request):
             except IOError as e:
                 c['errors'].append(e)
 
-    return render_to_response('bulk_edit.html', c, context_instance=RequestContext(request))
+    return render(request, 'bulk_edit.html', c)
 
 @adagios_decorator
 def bulk_delete(request):
@@ -613,7 +611,7 @@ def bulk_delete(request):
             except IOError as e:
                 c['errors'].append(e)
 
-    return render_to_response('bulk_delete.html', c, context_instance=RequestContext(request))
+    return render(request, 'bulk_delete.html', c)
 
 @adagios_decorator
 def bulk_copy(request):
@@ -661,7 +659,7 @@ def bulk_copy(request):
             except IOError as e:
                 c['errors'].append(e)
 
-    return render_to_response('bulk_copy.html', c, context_instance=RequestContext(request))
+    return render(request, 'bulk_copy.html', c)
 
 @adagios_decorator
 def delete_object_by_shortname(request, object_type, shortname):
@@ -689,7 +687,7 @@ def delete_object(request, object_id):
             return HttpResponseRedirect(reverse('objectbrowser') + "#" + my_obj.object_type)
         except Exception as e:
             c['errors'].append(e)
-    return render_to_response('delete_object.html', c, context_instance=RequestContext(request))
+    return render(request, 'delete_object.html', c)
 
 
 @adagios_decorator
@@ -712,7 +710,7 @@ def copy_object(request, object_id):
                 c['success'] = 'success'
             except IndexError as e:
                 c['errors'].append(e)
-    return render_to_response('copy_object.html', c, context_instance=RequestContext(request))
+    return render(request, 'copy_object.html', c)
 
 
 @adagios_decorator
@@ -745,7 +743,7 @@ def add_object(request, object_type):
         else:
             c['errors'].append(_('Could not validate form input'))
 
-    return render_to_response('add_object.html', c, context_instance=RequestContext(request))
+    return render(request, 'add_object.html', c)
 
 
 def _querystring_to_objects(dictionary):
@@ -853,7 +851,7 @@ def add_to_group(request, group_type=None, group_name=''):
                                                                                            'error': error,
                                                                                            })
 
-    return render_to_response('add_to_group.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'add_to_group.html', locals())
 
 
 @adagios_decorator
@@ -867,7 +865,7 @@ def edit_all(request, object_type, attribute_name):
     errors = []
     objects = Model.string_to_class.get(object_type).objects.all
     objects = [(x.get_shortname, x.get(attribute_name)) for x in objects]
-    return render_to_response('edit_all.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'edit_all.html', locals())
 
 
 
@@ -903,7 +901,7 @@ def search_objects(request, objects=None):
         services = [_find_service(host_name, service_description)]
         errors.append(_('be careful'))
 
-    return render_to_response('search_objects.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'search_objects.html', locals())
 
 
 @adagios_decorator
@@ -935,4 +933,4 @@ def import_objects(request):
                     saved_objects = form.save()
     else:
         form = ImportObjectsForm(initial=request.GET)
-    return render_to_response('import_objects.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'import_objects.html', locals())

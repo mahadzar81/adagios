@@ -17,18 +17,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.core.context_processors import csrf
-from django.shortcuts import render_to_response
+# csrf is handled automatically by Django middleware
+from django.shortcuts import render, redirect
 from django.shortcuts import HttpResponse
 import adagios.settings
 import adagios.status.utils
 import os
 
 from adagios.views import adagios_decorator, error_page
-from django.template import RequestContext
 from adagios.contrib import get_template_name
 from django import template
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 @adagios_decorator
@@ -43,7 +42,7 @@ def index(request, contrib_dir=None):
 
     if not views:
         errors.append(_("Directory '%s' is empty") % contrib_dir)
-    return render_to_response("contrib_index.html", locals(), context_instance=RequestContext(request))
+    return render(request, "contrib_index.html", locals())
 
 
 @adagios_decorator
@@ -66,6 +65,6 @@ def contrib(request, arg1, arg2=None, arg3=None, arg4=None):
     statistics = lambda: locals().get('statistics', adagios.status.utils.get_statistics(request))
 
     t = template.Template(content)
-    c = RequestContext(request, locals())
+    c = locals()
     html = t.render(c)
     return HttpResponse(html)

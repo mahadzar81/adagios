@@ -17,15 +17,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render, redirect, redirect
 from django.core import serializers
 from django.http import HttpResponse, HttpResponseServerError, HttpResponseRedirect
-from django.core.context_processors import csrf
-from django.template import RequestContext
-from django.utils.translation import ugettext as _
+# csrf is handled automatically by Django middleware
+from django.utils.translation import gettext as _
 from adagios.views import adagios_decorator
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from adagios.okconfig_ import forms
 
@@ -40,7 +39,7 @@ def addcomplete(request, c=None):
     """
     if not c:
         c = {}
-    return render_to_response('addcomplete.html', c, context_instance=RequestContext(request))
+    return render(request, 'addcomplete.html', c)
 
 
 @adagios_decorator
@@ -75,7 +74,7 @@ def addgroup(request):
     else:
         raise Exception("Sorry i only support GET or POST")
     c['form'] = f
-    return render_to_response('addgroup.html', c, context_instance=RequestContext(request))
+    return render(request, 'addgroup.html', c)
 
 
 @adagios_decorator
@@ -112,7 +111,7 @@ def addhost(request):
     else:
         raise Exception("Sorry i only support GET or POST")
     c['form'] = f
-    return render_to_response('addhost.html', c, context_instance=RequestContext(request))
+    return render(request, 'addhost.html', c)
 
 
 @adagios_decorator
@@ -142,7 +141,7 @@ def addtemplate(request, host_name=None):
                 c['errors'].append(e)
         else:
             c['errors'].append(_("Could not validate form"))
-    return render_to_response('addtemplate.html', c, context_instance=RequestContext(request))
+    return render(request, 'addtemplate.html', c)
 
 
 @adagios_decorator
@@ -179,7 +178,7 @@ def addservice(request):
                 c['errors'].append(e)
         else:
             c['errors'].append(_("Could not validate form"))
-    return render_to_response('addservice.html', c, context_instance=RequestContext(request))
+    return render(request, 'addservice.html', c)
 
 
 @adagios_decorator
@@ -193,7 +192,7 @@ def verify_okconfig(request):
             c['errors'].append(
                 _('There seems to be a problem with your okconfig installation'))
             break
-    return render_to_response('verify_okconfig.html', c, context_instance=RequestContext(request))
+    return render(request, 'verify_okconfig.html', c)
 
 
 @adagios_decorator
@@ -242,7 +241,7 @@ def install_agent(request):
         else:
             c['errors'].append(_('invalid input'))
 
-    return render_to_response('install_agent.html', c, context_instance=RequestContext(request))
+    return render(request, 'install_agent.html', c)
 
 
 @adagios_decorator
@@ -261,7 +260,7 @@ def edit(request, host_name):
         c['myhost'] = Model.Host.objects.get_by_shortname(host_name)
     except KeyError as e:
         c['errors'].append(_("Host %s not found") % e)
-        return render_to_response('edittemplate.html', c, context_instance=RequestContext(request))
+        return render(request, 'edittemplate.html', c)
     # Get all services of that host that contain a service_description
     services = Model.Service.objects.filter(
         host_name=host_name, service_description__contains='')
@@ -287,7 +286,7 @@ def edit(request, host_name):
                 c['errors'].append(
                     _('invalid data in %s') % service.get_description())
         c['forms'] = myforms
-    return render_to_response('edittemplate.html', c, context_instance=RequestContext(request))
+    return render(request, 'edittemplate.html', c)
 
 
 @adagios_decorator
@@ -302,7 +301,7 @@ def choose_host(request):
         if c['form'].is_valid():
             host_name = c['form'].cleaned_data['host_name']
             return HttpResponseRedirect(reverse("adagios.okconfig_.views.edit", args=[host_name]))
-    return render_to_response('choosehost.html', c, context_instance=RequestContext(request))
+    return render(request, 'choosehost.html', c)
 
 
 @adagios_decorator
@@ -334,4 +333,4 @@ def scan_network(request):
                     i.check()
             except Exception as e:
                 c['errors'].append(_("Error running scan"))
-    return render_to_response('scan_network.html', c, context_instance=RequestContext(request))
+    return render(request, 'scan_network.html', c)

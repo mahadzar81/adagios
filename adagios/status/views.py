@@ -17,14 +17,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from past.builtins import cmp
-from future.utils import string_types
-from builtins import str
-from builtins import map
-from past.utils import old_div
 from django.http import HttpResponse
 from functools import cmp_to_key
 
@@ -34,11 +26,10 @@ from collections import defaultdict
 import json
 import traceback
 
-from django.shortcuts import render_to_response, redirect
-from django.template import RequestContext
+from django.shortcuts import render, redirect, redirect
 from django.utils.encoding import smart_str
-from django.core.context_processors import csrf
-from django.utils.translation import ugettext as _
+# csrf is handled automatically by Django middleware
+from django.utils.translation import gettext as _
 
 import pynag.Model
 import pynag.Utils
@@ -52,7 +43,7 @@ from adagios.status import utils
 import adagios.status.rest
 import adagios.status.forms
 import adagios.businessprocess
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from adagios.status import graphite
 
 state = defaultdict(lambda: "unknown")
@@ -121,17 +112,17 @@ def network_parents(request):
                     crit += 1
             total = float(len(i['childs']))
             i['health'] = float(ok) / total * 100.0
-            i['percent_ok'] = old_div(ok, total) * 100
-            i['percent_crit'] = old_div(crit, total) * 100
+            i['percent_ok'] = (ok / total) * 100
+            i['percent_crit'] = (crit / total) * 100
 
-    return render_to_response('status_parents.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_parents.html', c)
 
 
 @adagios_decorator
 def status(request):
     """ Compatibility layer around status.views.services
     """
-    # return render_to_response('status.html', c, context_instance=RequestContext(request))
+    # return render(request, 'status.html', c)
     # Left here for compatibility reasons:
     return services(request)
 
@@ -146,7 +137,7 @@ def services(request):
         'host_name', 'description', 'plugin_output', 'last_check', 'host_state', 'state',
         'last_state_change', 'acknowledged', 'downtimes', 'host_downtimes', 'comments_with_info']
     c['services'] = utils.get_services(request, fields=fields, **request.GET)
-    return render_to_response('status_services.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_services.html', c)
 
 @adagios_decorator
 def services_js(request):
@@ -158,14 +149,14 @@ def services_js(request):
         'host_name', 'description', 'plugin_output', 'last_check', 'host_state', 'state',
         'last_state_change', 'acknowledged', 'downtimes', 'host_downtimes', 'comments_with_info']
     c['services'] = json.dumps(utils.get_services(request, fields=fields, **request.GET))
-    return render_to_response('status_services_js.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_services_js.html', c)
 
 
 @adagios_decorator
 def status_dt(request):
     """ This view handles list of services  """
     c = {}
-    return render_to_response('status_dt.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_dt.html', c)
 
 
 @adagios_decorator
@@ -178,7 +169,7 @@ def snippets_services(request):
         'host_name', 'description', 'plugin_output', 'last_check', 'host_state', 'state',
         'last_state_change', 'acknowledged', 'downtimes', 'host_downtimes', 'comments_with_info']
     c['services'] = utils.get_services(request, fields=fields, **request.GET)
-    return render_to_response('snippets/status_servicelist_snippet.html', c, context_instance=RequestContext(request))
+    return render(request, 'snippets/status_servicelist_snippet.html', c)
 
 @adagios_decorator
 def snippets_hosts(request):
@@ -187,7 +178,7 @@ def snippets_hosts(request):
     c['errors'] = []
     c['hosts'] = utils.get_hosts(request, **request.GET)
     c['host_name'] = request.GET.get('detail', None)
-    return render_to_response('snippets/status_hostlist_snippet.html', c, context_instance=RequestContext(request))
+    return render(request, 'snippets/status_hostlist_snippet.html', c)
 
 
 @adagios_decorator
@@ -236,10 +227,10 @@ def snippets_log(request):
         css_hint[2] = 'danger'
         css_hint[3] = 'unknown'
         for i in log:
-            i['duration_percent'] = old_div(100 * i['duration'], total_duration)
+            i['duration_percent'] = (100 * i['duration'] / total_duration)
             i['bootstrap_status'] = css_hint[i['state']]
 
-    return render_to_response('snippets/status_statehistory_snippet.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'snippets/status_statehistory_snippet.html', locals())
 
 
 @adagios_decorator
@@ -352,7 +343,7 @@ def service_detail(request, host_name, service_description):
                     default[k] = v
                 c['graphite_default'] = default
     
-    return render_to_response('status_detail.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_detail.html', c)
 
 
 def _get_network_parents(request, host_name):
@@ -419,7 +410,7 @@ def hostgroup_detail(request, hostgroup_name):
         _add_statistics_to_hostgroups(c['hostgroups'])
     except Exception as e:
         c['errors'].append(e)
-    return render_to_response('status_hostgroup.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_hostgroup.html', c)
 
 
 def _add_statistics_to_hostgroups(hostgroups):
@@ -453,11 +444,11 @@ def _add_statistics_to_hostgroups(hostgroups):
             total = float(total)
             hg['health'] = float(ok) / total * 100.0
             hg['health'] = float(ok) / total * 100.0
-            hg['percent_ok'] = old_div(ok, total) * 100
-            hg['percent_warn'] = old_div(warn, total) * 100
-            hg['percent_crit'] = old_div(crit, total) * 100
-            hg['percent_unknown'] = old_div(unknown, total) * 100
-            hg['percent_pending'] = old_div(pending, total) * 100
+            hg['percent_ok'] = (ok / total) * 100
+            hg['percent_warn'] = (warn / total) * 100
+            hg['percent_crit'] = (crit / total) * 100
+            hg['percent_unknown'] = (unknown / total) * 100
+            hg['percent_pending'] = (pending / total) * 100
         except ZeroDivisionError:
             pass
 
@@ -473,7 +464,7 @@ def status_servicegroups(request):
     c['servicegroup_name'] = servicegroup_name
     c['request'] = request
     c['servicegroups'] = servicegroups
-    return render_to_response('status_servicegroups.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_servicegroups.html', c)
 
 
 @adagios_decorator
@@ -538,11 +529,11 @@ def status_hostgroups(request):
         try:
             total = float(total)
             host['health'] = float(ok) / total * 100.0
-            host['percent_ok'] = old_div(ok, total) * 100
-            host['percent_warn'] = old_div(warn, total) * 100
-            host['percent_crit'] = old_div(crit, total) * 100
-            host['percent_unknown'] = old_div(unknown, total) * 100
-            host['percent_pending'] = old_div(pending, total) * 100
+            host['percent_ok'] = (ok / total) * 100
+            host['percent_warn'] = (warn / total) * 100
+            host['percent_crit'] = (crit / total) * 100
+            host['percent_unknown'] = (unknown / total) * 100
+            host['percent_pending'] = (pending / total) * 100
         except ZeroDivisionError:
             host['health'] = 'n/a'
     # Extra statistics for our hostgroups
@@ -559,14 +550,14 @@ def status_hostgroups(request):
             total = float(total)
             hg['health'] = float(ok) / total * 100.0
             hg['health'] = float(ok) / total * 100.0
-            hg['percent_ok'] = old_div(ok, total) * 100
-            hg['percent_warn'] = old_div(warn, total) * 100
-            hg['percent_crit'] = old_div(crit, total) * 100
-            hg['percent_unknown'] = old_div(unknown, total) * 100
-            hg['percent_pending'] = old_div(pending, total) * 100
+            hg['percent_ok'] = (ok / total) * 100
+            hg['percent_warn'] = (warn / total) * 100
+            hg['percent_crit'] = (crit / total) * 100
+            hg['percent_unknown'] = (unknown / total) * 100
+            hg['percent_pending'] = (pending / total) * 100
         except ZeroDivisionError:
             pass
-    return render_to_response('status_hostgroups.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_hostgroups.html', c)
 
 
 @adagios_decorator
@@ -582,7 +573,7 @@ def hosts(request):
     c['errors'] = []
     c['hosts'] = utils.get_hosts(request, **request.GET)
     c['host_name'] = request.GET.get('detail', None)
-    return render_to_response('status_host.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_host.html', c)
 
 
 @adagios_decorator
@@ -595,7 +586,7 @@ def problems(request):
         search_filter['state__isnot'] = '0'
     c['hosts'] = utils.get_hosts(request, **search_filter)
     c['services'] = utils.get_services(request, **search_filter)
-    return render_to_response('status_problems.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_problems.html', c)
 
 
 
@@ -639,11 +630,11 @@ def _add_statistics_to_hosts(hosts):
         try:
             total = float(total)
             host['health'] = float(ok) / total * 100.0
-            host['percent_ok'] = old_div(ok, total) * 100
-            host['percent_warn'] = old_div(warn, total) * 100
-            host['percent_crit'] = old_div(crit, total) * 100
-            host['percent_unknown'] = old_div(unknown, total) * 100
-            host['percent_pending'] = old_div(pending, total) * 100
+            host['percent_ok'] = (ok / total) * 100
+            host['percent_warn'] = (warn / total) * 100
+            host['percent_crit'] = (crit / total) * 100
+            host['percent_unknown'] = (unknown / total) * 100
+            host['percent_pending'] = (pending / total) * 100
         except ZeroDivisionError:
             host['health'] = 'n/a'
             host['percent_ok'] = 0
@@ -657,7 +648,7 @@ def _add_statistics_to_hosts(hosts):
 def status_index(request):
     c = adagios.status.utils.get_statistics(request)
     c['services'] = adagios.status.utils.get_services(request, unhandled=True)
-    return render_to_response('status_index.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_index.html', c)
 
 
 @adagios_decorator
@@ -691,7 +682,7 @@ def test_livestatus(request):
             c['query'] = livestatus.last_query
             c['header'] = list(c['results'][0].keys())
 
-    return render_to_response('test_livestatus.html', c, context_instance=RequestContext(request))
+    return render(request, 'test_livestatus.html', c)
 
 
 def _status_combined(request, optimized=False):
@@ -751,11 +742,11 @@ def _status_combined(request, optimized=False):
     if service_totals == 0:
         c['service_status'] = 0
     else:
-        c['service_status'] = [old_div(100 * x, service_totals) for x in service_status]
+        c['service_status'] = [(100 * x / service_totals) for x in service_status]
     if host_totals == 0:
         c['host_status'] = 0
     else:
-        c['host_status'] = [old_div(100 * x, host_totals) for x in host_status]
+        c['host_status'] = [(100 * x / host_totals) for x in host_status]
     return c
 
 
@@ -783,7 +774,7 @@ def dashboard(request):
         reverse=True, key=cmp_to_key(lambda a, b: cmp(a['last_check'], b['last_check'])))
     c['service_problems'].sort(
         reverse=True, key=cmp_to_key(lambda a, b: cmp(a['state'], b['state'])))
-    return render_to_response('status_dashboard.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_dashboard.html', c)
 
 
 @adagios_decorator
@@ -865,7 +856,7 @@ def state_history(request):
             last_item['end_time'] = end_time
             last_item['duration'] = duration = last_item[
                 'end_time'] - last_item['time']
-            last_item['duration_percent'] = old_div(100 * duration, total_duration)
+            last_item['duration_percent'] = (100 * duration / total_duration)
             service['duration'] += last_item['duration_percent']
             if last_item['state'] == 0:
                 service['sla'] += last_item['duration_percent']
@@ -886,7 +877,7 @@ def state_history(request):
     c['services'] = services
     c['start_time'] = start_time
     c['end_time'] = end_time
-    return render_to_response('state_history.html', c, context_instance=RequestContext(request))
+    return render(request, 'state_history.html', c)
 
 
 def _status_log(request):
@@ -952,7 +943,7 @@ def log(request):
     c = _status_log(request)
     c['request'] = request
     c['log'].reverse()
-    return render_to_response('status_log.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_log.html', c)
 
 
 @adagios_decorator
@@ -964,7 +955,7 @@ def comment_list(request):
     l = adagios.status.utils.livestatus(request)
     args = pynag.Utils.grep_to_livestatus(**request.GET)
     c['comments'] = l.query('GET comments', *args)
-    return render_to_response('status_comments.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_comments.html', c)
 
 
 @adagios_decorator
@@ -976,7 +967,7 @@ def downtime_list(request):
     l = adagios.status.utils.livestatus(request)
     args = pynag.Utils.grep_to_livestatus(**request.GET)
     c['downtimes'] = l.query('GET downtimes', *args)
-    return render_to_response('status_downtimes.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_downtimes.html', c)
 
 @adagios_decorator
 def acknowledgement_list(request):
@@ -987,7 +978,7 @@ def acknowledgement_list(request):
     l = adagios.status.utils.livestatus(request)
     args = pynag.Utils.grep_to_livestatus(**request.GET)
     c['acknowledgements'] = l.query('GET comments', 'Filter: entry_type = 4', *args)
-    return render_to_response('status_acknowledgements.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_acknowledgements.html', c)
 
 
 @adagios_decorator
@@ -1005,7 +996,7 @@ def perfdata(request):
         i['metrics'] = metrics
 
     c['perfdata'] = perfdata
-    return render_to_response('status_perfdata.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_perfdata.html', c)
 
 
 @adagios_decorator
@@ -1016,7 +1007,7 @@ def contact_list(request):
     c['messages'] = []
     c['errors'] = []
     c['contacts'] = adagios.status.utils.get_contacts(request, **request.GET)
-    return render_to_response('status_contacts.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_contacts.html', c)
 
 
 @adagios_decorator
@@ -1061,7 +1052,7 @@ def contact_detail(request, contact_name):
     nagiosdir = dirname(adagios.settings.nagios_config or pynag.Model.config.guess_cfg_file())
     git = pynag.Utils.GitRepo(directory=nagiosdir)
     c['gitlog'] = git.log(author_name=contact_name.decode('utf-8'))
-    return render_to_response('status_contact.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_contact.html', c)
 
 
 @adagios_decorator
@@ -1072,7 +1063,7 @@ def map_view(request):
     c['map_center'] = adagios.settings.map_center
     c['map_zoom'] = adagios.settings.map_zoom
 
-    return render_to_response('status_map.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_map.html', c)
 
 
 @adagios_decorator
@@ -1087,7 +1078,7 @@ def servicegroup_detail(request, servicegroup_name):
     search_conditions.pop('servicegroup_name')
 
     c['services'] = adagios.status.utils.get_services(request, groups__has_field=servicegroup_name, **search_conditions)
-    return render_to_response('status_servicegroup.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_servicegroup.html', c)
 
 @adagios_decorator
 def contactgroups(request):
@@ -1098,7 +1089,7 @@ def contactgroups(request):
     c['errors'] = []
     l = adagios.status.utils.livestatus(request)
     c['contactgroups'] = l.get_contactgroups(**request.GET)
-    return render_to_response('status_contactgroups.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_contactgroups.html', c)
 
 
 @adagios_decorator
@@ -1136,7 +1127,7 @@ def contactgroup_detail(request, contactgroup_name):
         contacts.append(contact)
     c['contacts'] = contacts
 
-    return render_to_response('status_contactgroup.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_contactgroup.html', c)
 
 
 
@@ -1185,7 +1176,7 @@ def perfdata2(request):
     c['metrics'] = interesting_metrics
     c['services'] = services
 
-    return render_to_response('status_perfdata2.html', c, context_instance=RequestContext(request))
+    return render(request, 'status_perfdata2.html', c)
 
 
 def acknowledge(request):
@@ -1222,4 +1213,4 @@ def backends(request):
     backends = livestatus.get_backends()
     for i, v in list(backends.items()):
         v.test(raise_error=False)
-    return render_to_response('status_backends.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'status_backends.html', locals())

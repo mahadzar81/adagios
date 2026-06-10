@@ -15,13 +15,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from builtins import str
 from django.http import HttpResponse
 import traceback
-from django.shortcuts import render_to_response, redirect
-from django.template import RequestContext, loader
+from django.shortcuts import render, redirect, redirect
 from django import template
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 import time
 import logging
 import adagios.settings
@@ -67,7 +65,7 @@ def error_page(request, context=None):
         content = str(context)
         response = HttpResponse(content=content, content_type='application/json')
     else:
-        response = render_to_response('status_error.html', context, context_instance=RequestContext(request))
+        response = render(request, 'status_error.html', context)
     response.status_code = 500
     return response
 
@@ -91,6 +89,6 @@ def http_403(request, exception=None):
         c['access_required'] = exception.access_required
         response = HttpResponse(content=str(c), content_type='application/json')
     else:
-        response = render_to_response('403.html', context, context_instance=RequestContext(request))
+        response = render(request, '403.html', context)
     response.status_code = 403
     return response

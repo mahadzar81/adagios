@@ -21,13 +21,7 @@ Convenient stateless functions for the status module. These are meant for progra
 with status of Nagios.
 
 """
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from past.builtins import cmp
 from functools import cmp_to_key
-from builtins import str, int
-from past.utils import old_div
 import time
 import pynag.Control.Command
 import pynag.Model
@@ -36,7 +30,7 @@ import adagios.status.utils
 import pynag.Parsers
 import collections
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from adagios import userdata
 
 def hosts(request, fields=None, **kwargs):
@@ -552,7 +546,7 @@ def state_history(
         css_hint[2] = 'danger'
         css_hint[3] = 'info'
         for i in log:
-            i['duration_percent'] = old_div(100 * i['duration'], total_duration)
+            i['duration_percent'] = (100 * i['duration'] / total_duration)
             i['bootstrap_status'] = css_hint[i['state']]
 
     return log_entries

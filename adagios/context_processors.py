@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from builtins import str
 import pynag.Model
 import os
 import getpass
@@ -35,7 +34,7 @@ import datetime
 from adagios import __version__
 from adagios import userdata
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 def on_page_load(request):
     """ Collection of actions that take place every page load """
@@ -164,7 +163,7 @@ def get_current_settings(request):
 def resolve_urlname(request):
     """Allows us to see what the matched urlname for this
     request is within the template"""
-    from django.core.urlresolvers import resolve
+    from django.urls import resolve
     try:
         res = resolve(request.path_info)
         if res:
